@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "dBz3/pEfzClj/dZbvIu8Iljj5xo=",
+			"path": "github.com/astaxie/beego/plugins/cors",
+			"revision": "1b6edafc96ad27b6515fafeccd7339dda3e997b1",
+			"revisionTime": "2018-11-30T13:54:26Z"
+		}
+	],
+	"rootPath": "usage-api"
+}

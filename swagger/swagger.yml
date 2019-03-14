@@ -1,0 +1,441 @@
+swagger: "2.0"
+info:
+  title: beego Test API
+  description: beego has a very cool tools to autogenerate documents for your API
+  version: 1.0.0
+  termsOfService: http://beego.me/
+  contact:
+    email: astaxie@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+basePath: /v1
+paths:
+  /check/:
+    get:
+      tags:
+      - check
+      description: 校验用户是否有访问Server或者VMServer权限
+      operationId: CheckController.Get
+      parameters:
+      - in: query
+        name: key
+        description: 参数key，例如：key=ip或key=sn
+        required: true
+        type: string
+      - in: query
+        name: value
+        description: 参数value,例如:value=192.168.150.29或value=21345
+        required: true
+        type: string
+      - in: query
+        name: user
+        description: 参数用户 例如:user=yanser.liu
+        required: true
+        type: string
+      responses:
+        "200":
+          description: 校验通过
+        "403":
+          description: 禁止接入
+  /owner/:
+    get:
+      tags:
+      - owner
+      description: 获取所有人员业务关系信息，或者某人名下的业务信息，某业务下的所属人信息
+      operationId: OwnerUsageController.Get All
+      parameters:
+      - in: query
+        name: user
+        description: 人员名称，例如：yanser.liu
+        type: string
+      - in: query
+        name: usage_id
+        description: 业务ID,例如：1
+        type: integer
+        format: int64
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/.RespUsage'
+        "403":
+          description: body is empty
+    put:
+      tags:
+      - owner
+      description: 修改业务-人员关系
+      operationId: OwnerUsageController.Put
+      parameters:
+      - in: body
+        name: body
+        description: Id，IsManager 是必填字段，其他字段均不需要填写
+        required: true
+        schema:
+          $ref: '#/definitions/models.SysOwnerUsage'
+      responses:
+        "201":
+          description: ""
+          schema:
+            $ref: '#/definitions/.RespUsage'
+        "403":
+          description: '"更新失败"'
+    post:
+      tags:
+      - owner
+      description: 创建“人员-业务”关联关系
+      operationId: OwnerUsageController.Post One
+      parameters:
+      - in: body
+        name: body
+        description: 业务ID，人员ID，是否是管理员为必填字段，其他字段均不需要填写
+        required: true
+        schema:
+          $ref: '#/definitions/models.SysOwnerUsage'
+      responses:
+        "201":
+          description: ""
+          schema:
+            $ref: '#/definitions/.RespUsage'
+        "403":
+          description: '"插入失败"'
+  /owner/{id}:
+    get:
+      tags:
+      - owner
+      description: 通过人员业务关联ID查询该条数据下的信息
+      operationId: OwnerUsageController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: 人员业务关联ID，例如：1
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/.RespUsage'
+        "403":
+          description: :id is empty
+    delete:
+      tags:
+      - owner
+      description: 删除人员-业务关联关系
+      operationId: OwnerUsageController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: OwnerUsageId,例如：1,2,3,4
+        required: true
+        type: array
+        items:
+          type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+  /query/usage/user/{name}/:
+    get:
+      tags:
+      - query/usage/user/:name
+      description: get All Usage By UserName
+      operationId: QueryUsageController.GetAll
+      parameters:
+      - in: path
+        name: name
+        description: 用户名, 例如:yanser.liu
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/.RespUsage'
+        "403":
+          description: body is empty
+  /query/usage/user/{name}/{level}:
+    get:
+      tags:
+      - query/usage/user/:name
+      description: get All 1 Level or 2 Level Usage By UserName
+      operationId: QueryUsageController.Get
+      parameters:
+      - in: path
+        name: name
+        description: 用户名, 例如:yanser.liu
+        required: true
+        type: string
+      - in: path
+        name: level
+        description: 一二级业务等级, 例如：1或2
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/.RespUsage'
+        "403":
+          description: body is empty
+  /usage/:
+    get:
+      tags:
+      - usage
+      description: 获取所有的一二级业务信息，或者通过一级业务名称获取二级业务信息
+      operationId: UsageNewController.Get All
+      parameters:
+      - in: query
+        name: usage
+        description: 一级业务名称，例如：usage=uhost
+        type: string
+      - in: query
+        name: level
+        description: 获取一级业务列表或者二级业务列表，例如：level=1
+        schema:
+          $ref: '#/definitions/.init'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/.RespUsage'
+        "403":
+          description: body is empty
+    put:
+      tags:
+      - usage
+      description: 修改一二级业务信息
+      operationId: UsageNewController.Put
+      parameters:
+      - in: body
+        name: body
+        description: 需要修改的信息
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsageNew'
+      responses:
+        "201":
+          description: ""
+          schema:
+            $ref: '#/definitions/.RespUsage'
+        "403":
+          description: '"更新失败"'
+    post:
+      tags:
+      - usage
+      description: 创建新的一二级业务
+      operationId: UsageNewController.Post One
+      parameters:
+      - in: body
+        name: body
+        description: 一二级业务信息
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsageNew'
+      - in: header
+        name: cookie
+        description: sso token
+        required: true
+        type: string
+      responses:
+        "201":
+          description: ""
+          schema:
+            $ref: '#/definitions/.RespUsage'
+        "403":
+          description: '"插入失败"'
+  /usage/{id}:
+    get:
+      tags:
+      - usage
+      description: 获取指定的一二级业务信息
+      operationId: UsageNewController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: 一二级业务ID，例如：1
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/.RespUsage'
+        "403":
+          description: :id is empty
+    delete:
+      tags:
+      - usage
+      description: 删除指定的一二级业务信息
+      operationId: UsageNewController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: 业务ID，例如：1,2,3
+        required: true
+        type: array
+        items:
+          type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+  /user/:
+    get:
+      tags:
+      - user
+      description: 获取所有OA人员信息
+      operationId: UserController.GetAll
+      responses:
+        "200":
+          description: ""
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/models.SysOa'
+        "403":
+          description: body is empty
+  /user/{id}:
+    get:
+      tags:
+      - user
+      description: 获取指定OA人员信息
+      operationId: UserController.GetOne
+      parameters:
+      - in: path
+        name: id
+        description: OA人员ID，例如：1
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/.User'
+        "403":
+          description: :id is empty
+definitions:
+  .RespUsage:
+    type: object
+  .User:
+    type: object
+  .init:
+    type: object
+  models.SysOa:
+    title: SysOa
+    type: object
+    properties:
+      BossId:
+        type: integer
+        format: int64
+      CXO:
+        type: integer
+        format: int64
+      CreatedAt:
+        type: string
+      DeletedAt:
+        type: string
+      DepartmentCN:
+        type: string
+      Email:
+        type: string
+      ExtraEmail:
+        type: string
+      HRBP:
+        type: integer
+        format: int64
+      Id:
+        type: integer
+        format: int64
+      Job:
+        type: string
+      JobNumber:
+        type: integer
+        format: int64
+      LastUpdatePerson:
+        type: string
+      LastUpdateTime:
+        type: string
+      Leader:
+        type: integer
+        format: int64
+      MemberState:
+        type: integer
+        format: int64
+      NameCn:
+        type: string
+      PhoneNumber:
+        type: string
+      Position:
+        type: integer
+        format: int64
+      UserName:
+        type: string
+  models.SysOwnerUsage:
+    title: SysOwnerUsage
+    type: object
+    properties:
+      CreatedAt:
+        type: string
+      DeletedAt:
+        type: string
+      Id:
+        type: integer
+        format: int64
+      IsManager:
+        type: integer
+        format: int64
+      LastUpdatePerson:
+        type: string
+      LastUpdateTime:
+        type: string
+      OAId:
+        type: integer
+        format: int64
+      UsageId:
+        type: integer
+        format: int64
+  models.UsageNew:
+    title: UsageNew
+    type: object
+    properties:
+      Admin:
+        type: array
+        items:
+          type: integer
+          format: int64
+      HierarchyLevel:
+        type: integer
+        format: int64
+      Id:
+        type: integer
+        format: int64
+      LastUpdatePerson:
+        type: string
+      Remark:
+        type: string
+      ResourceNum:
+        type: integer
+        format: int64
+      SecUsage:
+        type: string
+      Usage:
+        type: string
+tags:
+- name: usage
+  description: |
+    业务管理接口
+- name: user
+  description: |
+    查询OA人员信息接口
+- name: owner
+  description: |
+    管理“人员-业务”之间的关系
+- name: check
+  description: |
+    通过IP/SN 和用户，查询匹配规则
+- name: query/usage/user/:name
+  description: |
+    Query Usage By UserName Controller
